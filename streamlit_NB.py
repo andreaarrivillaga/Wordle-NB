@@ -113,6 +113,10 @@ def reset_game():
         st.session_state.suggested_words = []
         st.session_state.game_initialized = True
 
+# Function to clear the input box after submission
+def submit():
+    st.session_state.my_text = st.session_state.widget
+    st.session_state.widget = ""
 
 # Streamlit UI
 st.title("Wordle Game - Naive Bayes Suggestions")
@@ -122,9 +126,15 @@ st.write("Enter a 5-letter word and get feedback with suggestions!")
 model, vectorizer = load_model_and_vectorizer()
 reset_game()
 
-# Text input for guesses
-guess = st.text_input("Type your guess (5 letters):").strip().lower()
+# Text input for guesses with clearing functionality
+if "my_text" not in st.session_state:
+    st.session_state.my_text = ""
 
+st.text_input("Type your guess (5 letters):", max_chars=5, key="widget", on_change=submit)
+guess = st.session_state.my_text
+
+# Set guess input to what was in the text box before clearing
+guess_input = st.session_state.my_text
 if guess and len(guess) == 5:
     if guess not in word_list:
         st.warning("Invalid word. Please enter a valid 5-letter word.")
